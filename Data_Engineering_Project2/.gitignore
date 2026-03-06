@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+
+# Airflow
+airflow-logs/
+logs/
+
+# dbt
+dbt/food_prices_dbt/target/
+dbt/food_prices_dbt/dbt_packages/
+dbt/food_prices_dbt/logs/
+
+# Docker
+pgdata/
+
+# Temp
+*.tmp
+_tmp_*.csv

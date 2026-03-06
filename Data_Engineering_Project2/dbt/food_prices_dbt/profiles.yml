@@ -1,0 +1,12 @@
+food_prices_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('PG_HOST', 'localhost') }}"
+      port: 5432
+      user: "{{ env_var('PG_USER', 'postgres') }}"
+      pass: "{{ env_var('PG_PASSWORD', 'postgres') }}"
+      dbname: "{{ env_var('PG_DATABASE', 'food_prices_kenya') }}"
+      schema: food_prices
+      threads: 4

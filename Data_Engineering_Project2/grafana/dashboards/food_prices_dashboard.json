@@ -1,0 +1,114 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Maize Price Trend (KES) Over Time",
+      "description": "Monthly average maize retail price in KES across all markets",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "postgres", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "Price (KES)",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": true,
+            "drawStyle": "line",
+            "pointSize": 3,
+            "showPoints": "auto"
+          },
+          "unit": "currencyKES"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "postgres" },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  DATE_TRUNC('month', s.date)::DATE AS time,\n  ROUND(AVG(s.price)::NUMERIC, 2) AS \"Avg Maize Price (KES)\"\nFROM food_prices.stg_cleaned_prices s\nWHERE s.commodity ILIKE '%Maize%'\n  AND s.price_type = 'Retail'\nGROUP BY 1\nORDER BY 1;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Average USD Price by Commodity (Top 15)",
+      "description": "Bar chart comparing average USD price across the top 15 commodities",
+      "type": "barchart",
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 10 },
+      "datasource": { "type": "postgres", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "legend": { "displayMode": "hidden" },
+        "xTickLabelRotation": -45
+      },
+      "targets": [
+        {
+          "datasource": { "type": "postgres" },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  c.commodity,\n  ROUND(AVG(f.usd_price)::NUMERIC, 4) AS \"Avg USD Price\"\nFROM food_prices.fact_prices f\nJOIN food_prices.dim_commodity c ON f.commodity_id = c.commodity_id\nGROUP BY c.commodity\nORDER BY \"Avg USD Price\" DESC\nLIMIT 15;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Price Observations by County (Map / Bar)",
+      "description": "Number of price observations per county – identifies data coverage",
+      "type": "barchart",
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 10 },
+      "datasource": { "type": "postgres", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "legend": { "displayMode": "hidden" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "postgres" },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  m.county,\n  COUNT(*) AS \"Observations\"\nFROM food_prices.fact_prices f\nJOIN food_prices.dim_market m ON f.market_id = m.market_id\nGROUP BY m.county\nORDER BY \"Observations\" DESC;",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": ["food_prices", "kenya", "wfp"],
+  "templating": { "list": [] },
+  "time": { "from": "2006-01-01T00:00:00.000Z", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "WFP Kenya Food Prices Dashboard",
+  "uid": "wfp-kenya-food-prices",
+  "version": 1
+}

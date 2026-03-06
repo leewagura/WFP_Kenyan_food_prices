@@ -1,0 +1,26 @@
+# ===========================================================
+# Python dependencies for WFP Kenya Food Prices ETL
+# ===========================================================
+
+# Core ETL
+pandas>=2.1.0
+requests>=2.31.0
+numpy>=1.24.0
+
+# PostgreSQL
+psycopg2-binary>=2.9.9
+sqlalchemy>=2.0.0
+
+# Airflow (install separately or via Docker)
+# apache-airflow>=2.10.0
+
+# dbt
+dbt-core>=1.7.0
+dbt-postgres>=1.7.0
+
+# Snowflake (optional)
+# snowflake-connector-python>=3.6.0
+# snowflake-sqlalchemy>=1.5.0
+
+# Visualisation (optional, for quick local plots)
+matplotlib>=3.8.0

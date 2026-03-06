@@ -1,0 +1,50 @@
+version: 2
+
+sources:
+  - name: food_prices
+    database: food_prices_kenya
+    schema: food_prices
+    tables:
+      - name: fact_prices
+        description: "Fact table containing all price observations"
+        columns:
+          - name: fact_id
+            tests:
+              - unique
+              - not_null
+          - name: date_id
+            tests:
+              - not_null
+          - name: commodity_id
+            tests:
+              - not_null
+          - name: market_id
+            tests:
+              - not_null
+
+      - name: dim_date
+        description: "Date dimension table"
+        columns:
+          - name: date_id
+            tests:
+              - unique
+              - not_null
+
+      - name: dim_commodity
+        description: "Commodity dimension table"
+        columns:
+          - name: commodity_id
+            tests:
+              - unique
+              - not_null
+
+      - name: dim_market
+        description: "Market dimension table"
+        columns:
+          - name: market_id
+            tests:
+              - unique
+              - not_null
+
+      - name: stg_cleaned_prices
+        description: "Staging table with all cleaned flat data"

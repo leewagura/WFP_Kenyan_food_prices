@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: agg_monthly_avg_price
+    description: "Monthly average food prices aggregated by county and commodity"
+    columns:
+      - name: price_month
+        tests:
+          - not_null
+      - name: commodity
+        tests:
+          - not_null
+      - name: avg_price_kes
+        tests:
+          - not_null
+
+  - name: agg_price_trends
+    description: "Year-over-year price trends per commodity with YoY % change"
+    columns:
+      - name: year
+        tests:
+          - not_null
+      - name: commodity
+        tests:
+          - not_null
+
+  - name: agg_commodity_summary
+    description: "Overall summary statistics per commodity for bar chart visuals"
+    columns:
+      - name: commodity
+        tests:
+          - unique
+          - not_null

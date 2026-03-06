@@ -1,0 +1,102 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  airflow-init:
+    image: apache/airflow:3.1.7
+    command: db migrate
+    environment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__FERNET_KEY=46DE38tF38_f4XbX5N-jXlC0x6sM2H3v9W8Z5aP0g1Y=
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  airflow-webserver:
+    image: apache/airflow:3.1.7
+    command: api-server
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__TEST_CONNECTION=Enabled
+      - AIRFLOW__CORE__FERNET_KEY=46DE38tF38_f4XbX5N-jXlC0x6sM2H3v9W8Z5aP0g1Y=
+      - AIRFLOW__API_AUTH__JWT_SECRET=a25pE9w3etLFIQbTwWaPOg6FMmrecOQ3Km7HCWQ8
+      - AIRFLOW_CONN_MY_POSTGRES_DB=postgresql://airflow:airflow@postgres/airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./wfp_food_prices_ken.csv:/opt/airflow/data/wfp_food_prices_ken.csv
+    ports:
+      - "8080:8080"
+
+  airflow-scheduler:
+    image: apache/airflow:3.1.7
+    command: scheduler
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-webserver:
+        condition: service_started
+    environment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__TEST_CONNECTION=Enabled
+      - AIRFLOW__CORE__FERNET_KEY=46DE38tF38_f4XbX5N-jXlC0x6sM2H3v9W8Z5aP0g1Y=
+      - AIRFLOW__API_AUTH__JWT_SECRET=a25pE9w3etLFIQbTwWaPOg6FMmrecOQ3Km7HCWQ8
+      - AIRFLOW__CORE__EXECUTION_API_SERVER_URL=http://airflow-webserver:8080/execution/
+      - AIRFLOW_CONN_MY_POSTGRES_DB=postgresql://airflow:airflow@postgres/airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./wfp_food_prices_ken.csv:/opt/airflow/data/wfp_food_prices_ken.csv
+
+  airflow-dag-processor:
+    image: apache/airflow:3.1.7
+    command: dag-processor
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__FERNET_KEY=46DE38tF38_f4XbX5N-jXlC0x6sM2H3v9W8Z5aP0g1Y=
+      - AIRFLOW_CONN_MY_POSTGRES_DB=postgresql://airflow:airflow@postgres/airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./wfp_food_prices_ken.csv:/opt/airflow/data/wfp_food_prices_ken.csv
+
+  airflow-triggerer:
+    image: apache/airflow:3.1.7
+    command: triggerer
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__FERNET_KEY=46DE38tF38_f4XbX5N-jXlC0x6sM2H3v9W8Z5aP0g1Y=
+      - AIRFLOW_CONN_MY_POSTGRES_DB=postgresql://airflow:airflow@postgres/airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./wfp_food_prices_ken.csv:/opt/airflow/data/wfp_food_prices_ken.csv
