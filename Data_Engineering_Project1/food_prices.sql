@@ -17,12 +17,32 @@ CREATE TABLE IF NOT EXISTS raw_food_prices (
 	usdprice NUMERIC(8, 2)
 );
 
+-- Cleaned table: no nulls, no duplicates
+CREATE TABLE IF NOT EXISTS cleaned_food_prices (
+	date DATE NOT NULL,
+	admin1 VARCHAR(50) NOT NULL,
+	admin2 VARCHAR(50) NOT NULL,
+	market VARCHAR(100) NOT NULL,
+	market_id INTEGER NOT NULL,
+	latitude NUMERIC(8, 4) NOT NULL,
+	longitude NUMERIC(8, 4) NOT NULL,
+	category VARCHAR(50) NOT NULL,
+	commodity VARCHAR(100) NOT NULL,
+	commodity_id INTEGER NOT NULL,
+	unit VARCHAR(50) NOT NULL,
+	priceflag VARCHAR(50) NOT NULL,
+	pricetype VARCHAR(50) NOT NULL,
+	currency VARCHAR(10) NOT NULL,
+	price NUMERIC(8, 2) NOT NULL,
+	usdprice NUMERIC(8, 2) NOT NULL
+);
+
 --average wholesale price of "Maize (white)" per year to observe inflation trends over time.
 SELECT 
     EXTRACT(YEAR FROM date) as price_year,
     commodity,
     ROUND(AVG(price), 2) as avg_yearly_price
-FROM raw_food_prices
+FROM cleaned_food_prices
 WHERE commodity = 'Maize (white)' AND pricetype = 'Wholesale'
 GROUP BY EXTRACT(YEAR FROM date), commodity
 ORDER BY price_year ASC;
@@ -32,7 +52,7 @@ ORDER BY price_year ASC;
 SELECT 
     commodity, 
     COUNT(DISTINCT market) as number_of_markets
-FROM raw_food_prices
+FROM cleaned_food_prices
 GROUP BY commodity
 HAVING COUNT(DISTINCT market) > 10
 ORDER BY number_of_markets DESC;
@@ -43,7 +63,7 @@ SELECT
     market,
     COUNT(DISTINCT category) AS total_categories,
     COUNT(DISTINCT commodity) AS unique_commodities_sold
-FROM raw_food_prices
+FROM cleaned_food_prices
 GROUP BY admin2, market
 ORDER BY unique_commodities_sold DESC
 LIMIT 10;

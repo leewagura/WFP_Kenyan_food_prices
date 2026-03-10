@@ -58,16 +58,17 @@
 Approach: Pure SQL transformations using Airflow's `SQLExecuteQueryOperator`.
 
 ```
-create_staging_table → load_csv_to_staging → ┬─ aggregate_avg_prices
-                                              └─ aggregate_avg_price_by_category
+create_staging_table → load_csv_to_staging → clean_data → ┬─ aggregate_avg_prices
+                                                           └─ aggregate_avg_price_by_category
 ```
 
 | What it does | How |
 |---|---|
 | Creates `raw_food_prices` table | `CREATE TABLE IF NOT EXISTS` |
 | Loads 17,632 CSV rows | Python + `PostgresHook` (truncate-and-reload, idempotent) |
-| Avg price per commodity per year | `CREATE TABLE AS SELECT … GROUP BY year, commodity` |
-| Avg price per category | `CREATE TABLE AS SELECT … GROUP BY category` |
+| Cleans data (nulls + duplicates) | SQL: `CREATE TABLE cleaned_food_prices AS SELECT DISTINCT … WHERE … IS NOT NULL` |
+| Avg price per commodity per year | `CREATE TABLE AS SELECT … GROUP BY year, commodity` (from cleaned data) |
+| Avg price per category | `CREATE TABLE AS SELECT … GROUP BY category` (from cleaned data) |
 
 **Sample output — avg price per category:**
 
@@ -170,13 +171,15 @@ kenya-food-prices-pipeline/
 ├── README.md                           # ← You are here
 │
 ├── Data_Engineering_Project1/          # SQL-first ETL
-│   ├── docker-compose.yaml             # Standalone compose (single-project)
+│   ├── docker-compose.yaml             # Standalone compose (uses .env for secrets)
+│   ├── .env.example                    # Template for required environment variables
 │   ├── dags/
 │   │   └── kenya_food_prices_pipeline.py
 │   ├── wfp_food_prices_ken.csv
 │   ├── food_prices.sql                 # DDL + analytic queries
-│   ├── load_raw_food_prices.py         # Standalone Python loader
-│   ├── Null_values_check.py            # Data quality exploration
+│   ├── load_raw_food_prices.py         # Standalone Python loader (env-var credentials)
+│   ├── clean1.py                       # Data cleaning: fix dtypes, drop nulls & duplicates
+│   ├── Null_values_check.py            # Data quality exploration (legacy)
 │   ├── rows_with_nulls.csv             # Rows with missing location data
 │   └── README.md
 │

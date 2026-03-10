@@ -2,8 +2,8 @@ services:
   postgres:
     image: postgres:17
     environment:
-      - POSTGRES_USER=airflow
-      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_USER=${PROJECT1_DB_USER:-airflow}
+      - POSTGRES_PASSWORD=${PROJECT1_DB_PASSWORD:-airflow}
       - POSTGRES_DB=airflow
     ports:
       - "5433:5432"
@@ -17,8 +17,8 @@ services:
     image: apache/airflow:3.1.7
     command: db migrate
     environment:
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
-      - AIRFLOW__CORE__FERNET_KEY=46DE38tF38_f4XbX5N-jXlC0x6sM2H3v9W8Z5aP0g1Y=
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${PROJECT1_DB_USER:-airflow}:${PROJECT1_DB_PASSWORD:-airflow}@postgres/airflow
+      - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY}
     depends_on:
       postgres:
         condition: service_healthy
@@ -30,13 +30,13 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${PROJECT1_DB_USER:-airflow}:${PROJECT1_DB_PASSWORD:-airflow}@postgres/airflow
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__CORE__TEST_CONNECTION=Enabled
-      - AIRFLOW__CORE__FERNET_KEY=46DE38tF38_f4XbX5N-jXlC0x6sM2H3v9W8Z5aP0g1Y=
-      - AIRFLOW__API_AUTH__JWT_SECRET=a25pE9w3etLFIQbTwWaPOg6FMmrecOQ3Km7HCWQ8
-      - AIRFLOW_CONN_MY_POSTGRES_DB=postgresql://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY}
+      - AIRFLOW__API_AUTH__JWT_SECRET=${AIRFLOW_JWT_SECRET}
+      - AIRFLOW_CONN_MY_POSTGRES_DB=postgresql://${PROJECT1_DB_USER:-airflow}:${PROJECT1_DB_PASSWORD:-airflow}@postgres/airflow
     volumes:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
@@ -54,13 +54,13 @@ services:
       airflow-webserver:
         condition: service_started
     environment:
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${PROJECT1_DB_USER:-airflow}:${PROJECT1_DB_PASSWORD:-airflow}@postgres/airflow
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__TEST_CONNECTION=Enabled
-      - AIRFLOW__CORE__FERNET_KEY=46DE38tF38_f4XbX5N-jXlC0x6sM2H3v9W8Z5aP0g1Y=
-      - AIRFLOW__API_AUTH__JWT_SECRET=a25pE9w3etLFIQbTwWaPOg6FMmrecOQ3Km7HCWQ8
+      - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY}
+      - AIRFLOW__API_AUTH__JWT_SECRET=${AIRFLOW_JWT_SECRET}
       - AIRFLOW__CORE__EXECUTION_API_SERVER_URL=http://airflow-webserver:8080/execution/
-      - AIRFLOW_CONN_MY_POSTGRES_DB=postgresql://airflow:airflow@postgres/airflow
+      - AIRFLOW_CONN_MY_POSTGRES_DB=postgresql://${PROJECT1_DB_USER:-airflow}:${PROJECT1_DB_PASSWORD:-airflow}@postgres/airflow
     volumes:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
@@ -74,10 +74,10 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${PROJECT1_DB_USER:-airflow}:${PROJECT1_DB_PASSWORD:-airflow}@postgres/airflow
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__CORE__FERNET_KEY=46DE38tF38_f4XbX5N-jXlC0x6sM2H3v9W8Z5aP0g1Y=
-      - AIRFLOW_CONN_MY_POSTGRES_DB=postgresql://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY}
+      - AIRFLOW_CONN_MY_POSTGRES_DB=postgresql://${PROJECT1_DB_USER:-airflow}:${PROJECT1_DB_PASSWORD:-airflow}@postgres/airflow
     volumes:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
@@ -91,10 +91,10 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${PROJECT1_DB_USER:-airflow}:${PROJECT1_DB_PASSWORD:-airflow}@postgres/airflow
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__CORE__FERNET_KEY=46DE38tF38_f4XbX5N-jXlC0x6sM2H3v9W8Z5aP0g1Y=
-      - AIRFLOW_CONN_MY_POSTGRES_DB=postgresql://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY}
+      - AIRFLOW_CONN_MY_POSTGRES_DB=postgresql://${PROJECT1_DB_USER:-airflow}:${PROJECT1_DB_PASSWORD:-airflow}@postgres/airflow
     volumes:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs

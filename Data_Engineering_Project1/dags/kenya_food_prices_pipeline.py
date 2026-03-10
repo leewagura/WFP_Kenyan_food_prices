@@ -85,7 +85,54 @@ with DAG(
     )
 
     # -------------------------------------------------------------------
-    # Task 3 – Aggregate: average price per commodity per year
+    # Task 3 – Clean data: drop nulls and duplicates
+    # -------------------------------------------------------------------
+    clean_data = SQLExecuteQueryOperator(
+        task_id="clean_data",
+        conn_id="my_postgres_db",
+        sql="""
+        DROP TABLE IF EXISTS cleaned_food_prices;
+
+        CREATE TABLE cleaned_food_prices AS
+        SELECT DISTINCT
+            date,
+            admin1,
+            admin2,
+            market,
+            market_id,
+            latitude,
+            longitude,
+            category,
+            commodity,
+            commodity_id,
+            unit,
+            priceflag,
+            pricetype,
+            currency,
+            price,
+            usdprice
+        FROM raw_food_prices
+        WHERE date       IS NOT NULL
+          AND admin1     IS NOT NULL
+          AND admin2     IS NOT NULL
+          AND market     IS NOT NULL
+          AND market_id  IS NOT NULL
+          AND latitude   IS NOT NULL
+          AND longitude  IS NOT NULL
+          AND category   IS NOT NULL
+          AND commodity  IS NOT NULL
+          AND commodity_id IS NOT NULL
+          AND unit       IS NOT NULL
+          AND priceflag  IS NOT NULL
+          AND pricetype  IS NOT NULL
+          AND currency   IS NOT NULL
+          AND price      IS NOT NULL
+          AND usdprice   IS NOT NULL;
+        """,
+    )
+
+    # -------------------------------------------------------------------
+    # Task 4 – Aggregate: average price per commodity per year
     # -------------------------------------------------------------------
     aggregate_prices = SQLExecuteQueryOperator(
         task_id="aggregate_avg_prices",
@@ -101,14 +148,14 @@ with DAG(
             COUNT(*)                      AS num_observations,
             ROUND(AVG(price), 2)          AS avg_price_kes,
             ROUND(AVG(usdprice), 4)       AS avg_price_usd
-        FROM raw_food_prices
+        FROM cleaned_food_prices
         GROUP BY EXTRACT(YEAR FROM date), commodity, pricetype
         ORDER BY commodity, price_year;
         """,
     )
 
     # -------------------------------------------------------------------
-    # Task 4 – Aggregate: average price per category
+    # Task 5 – Aggregate: average price per category
     # -------------------------------------------------------------------
     aggregate_by_category = SQLExecuteQueryOperator(
         task_id="aggregate_avg_price_by_category",
@@ -125,7 +172,7 @@ with DAG(
             ROUND(AVG(usdprice), 4)       AS avg_price_usd,
             ROUND(MIN(price), 2)          AS min_price_kes,
             ROUND(MAX(price), 2)          AS max_price_kes
-        FROM raw_food_prices
+        FROM cleaned_food_prices
         GROUP BY category
         ORDER BY avg_price_kes DESC;
         """,
@@ -134,4 +181,4 @@ with DAG(
     # -------------------------------------------------------------------
     # Pipeline order
     # -------------------------------------------------------------------
-    create_staging_table >> load_csv >> [aggregate_prices, aggregate_by_category]
+    create_staging_table >> load_csv >> clean_data >> [aggregate_prices, aggregate_by_category]

@@ -15,16 +15,17 @@ An Apache Airflow 3.1.7 pipeline that loads WFP (World Food Programme) Kenya foo
 ## DAG: `kenya_food_prices_pipeline`
 
 ```
-create_staging_table → load_csv_to_staging → ┬─ aggregate_avg_prices
-                                              └─ aggregate_avg_price_by_category
+create_staging_table → load_csv_to_staging → clean_data → ┌─ aggregate_avg_prices
+                                                          └─ aggregate_avg_price_by_category
 ```
 
 | Task | Type | Description |
 |---|---|---|
 | `create_staging_table` | SQLExecuteQueryOperator | Creates `raw_food_prices` table if it does not exist |
 | `load_csv_to_staging` | PythonOperator | Truncates and bulk-inserts all 17,632 CSV rows (idempotent) |
-| `aggregate_avg_prices` | SQLExecuteQueryOperator | Builds `avg_price_per_commodity_year` — avg KES & USD price per commodity, price type, and year |
-| `aggregate_avg_price_by_category` | SQLExecuteQueryOperator | Builds `avg_price_per_category` — avg, min, max price per food category |
+| `clean_data` | SQLExecuteQueryOperator | Creates `cleaned_food_prices` by dropping nulls and duplicates from the staging table |
+| `aggregate_avg_prices` | SQLExecuteQueryOperator | Builds `avg_price_per_commodity_year` from **cleaned** data |
+| `aggregate_avg_price_by_category` | SQLExecuteQueryOperator | Builds `avg_price_per_category` from **cleaned** data |
 
 ## Output Tables
 
@@ -126,8 +127,10 @@ The `actual,aggregate` value breaks any simple filter such as `WHERE priceflag =
 
 | File | Purpose |
 |---|---|
-| `docker-compose.yaml` | Airflow 3.1.7 + PostgreSQL 17 stack |
-| `dags/kenya_food_prices_pipeline.py` | Airflow DAG (3 tasks) |
+| `docker-compose.yaml` | Airflow 3.1.7 + PostgreSQL 17 stack (uses `.env` for secrets) |
+| `.env.example` | Template for required environment variables |
+| `dags/kenya_food_prices_pipeline.py` | Airflow DAG (5 tasks, including data cleaning) |
 | `wfp_food_prices_ken.csv` | Raw WFP dataset |
 | `food_prices.sql` | Standalone SQL: table DDL + example analytic queries |
-| `load_raw_food_prices.py` | Standalone Python loader (local dev, not used by Airflow) |
+| `load_raw_food_prices.py` | Standalone Python loader (reads credentials from env vars) |
+| `clean1.py` | Standalone data cleaning script: fixes dtypes, drops nulls & duplicates |
