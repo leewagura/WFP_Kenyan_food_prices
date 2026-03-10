@@ -132,5 +132,5 @@ The `actual,aggregate` value breaks any simple filter such as `WHERE priceflag =
 | `dags/kenya_food_prices_pipeline.py` | Airflow DAG (5 tasks, including data cleaning) |
 | `wfp_food_prices_ken.csv` | Raw WFP dataset |
 | `food_prices.sql` | Standalone SQL: table DDL + example analytic queries |
-| `load_raw_food_prices.py` | Standalone Python loader (reads credentials from env vars) |
+| `load_raw_food_prices.py` | Standalone Python loader — loads **cleaned** CSV into PostgreSQL (reads credentials from env vars) |
 | `clean1.py` | Standalone data cleaning script: fixes dtypes, drops nulls & duplicates |

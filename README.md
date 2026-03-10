@@ -53,7 +53,7 @@
 
 ## Project 1 — SQL-First ETL Pipeline
 
-**DAG:** `kenya_food_prices_pipeline` · 4 tasks · [Details →](Data_Engineering_Project1/README.md)
+**DAG:** `kenya_food_prices_pipeline` · 5 tasks · [Details →](Data_Engineering_Project1/README.md)
 
 Approach: Pure SQL transformations using Airflow's `SQLExecuteQueryOperator`.
 
