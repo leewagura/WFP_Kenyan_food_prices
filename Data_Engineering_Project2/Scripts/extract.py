@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 # Default remote URL for WFP Kenya food prices dataset (HDX mirror)
 DEFAULT_URL = (
     "https://data.humdata.org/dataset/"
-    "4fdcd4dc-5c2f-43af-a1e4-93c9b6539571/resource/"
-    "8a920b5d-fb09-47a7-990c-a912e58e8c51/download/"
+    "e0d3fba6-f9a2-45d7-b949-140c455197ff/resource/"
+    "517ee1bf-2437-4f8c-aa1b-cb9925b9d437/download/"
     "wfp_food_prices_ken.csv"
 )
 

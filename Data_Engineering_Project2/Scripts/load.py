@@ -11,6 +11,7 @@ Supports incremental loading – only inserts rows not already present.
 
 import logging
 import os
+import re
 
 import pandas as pd
 from sqlalchemy import create_engine, text
@@ -41,7 +42,6 @@ def init_schema(engine) -> None:
         ddl = f.read()
 
     # Strip SQL comments (-- ...) to avoid issues when splitting on ;
-    import re
     ddl_no_comments = re.sub(r"--[^\n]*", "", ddl)
 
     with engine.begin() as conn:

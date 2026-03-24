@@ -1,8 +1,18 @@
+"""
+load_raw_food_prices.py — Standalone loader for the raw WFP Kenya CSV.
+
+Reads environment variables for PostgreSQL credentials and bulk-loads
+the CSV into the raw_food_prices table using pandas + SQLAlchemy.
+"""
+
 import os
+
 import pandas as pd
 from sqlalchemy import create_engine
 
+
 def load_csv_to_postgres():
+    """Read the local CSV and append it to the raw_food_prices table."""
     DB_USER = os.environ["DB_USER"]
     DB_PASSWORD = os.environ["DB_PASSWORD"]
     DB_HOST = os.environ.get("DB_HOST", "localhost")
@@ -21,6 +31,7 @@ def load_csv_to_postgres():
         print(f"Successfully loaded data into table '{TABLE_NAME}' in PostgreSQL.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
 
 if __name__ == "__main__":
     load_csv_to_postgres()

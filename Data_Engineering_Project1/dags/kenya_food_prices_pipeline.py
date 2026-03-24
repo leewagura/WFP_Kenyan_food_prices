@@ -1,13 +1,14 @@
 from airflow import DAG  # type: ignore[import-untyped]
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator  # type: ignore[import-untyped]
 from airflow.operators.python import PythonOperator  # type: ignore[import-untyped]
-from datetime import datetime
-
+from datetime import datetime, timedelta
 
 def load_csv_to_staging():
     """Load the WFP Kenya food-prices CSV into the raw_food_prices staging table."""
     from airflow.providers.postgres.hooks.postgres import PostgresHook  # type: ignore[import-untyped]
     import csv
+    import os
+    import time
 
     hook = PostgresHook(postgres_conn_id="my_postgres_db")
     conn = hook.get_conn()
@@ -16,7 +17,30 @@ def load_csv_to_staging():
     # Truncate so the task is idempotent on re-runs
     cur.execute("TRUNCATE TABLE raw_food_prices;")
 
-    csv_path = "/opt/airflow/data/wfp_food_prices_ken.csv"
+    # On host startup, Docker bind mounts can take a short time to become visible.
+    csv_candidates = [
+        os.environ.get("FOOD_PRICES_CSV_PATH"),
+        "/opt/airflow/data/wfp_food_prices_ken.csv",
+        "/opt/airflow/wfp_food_prices_ken.csv",
+        "wfp_food_prices_ken.csv",
+    ]
+
+    csv_path = None
+    for _ in range(24):  # wait up to 2 minutes in 5-second intervals
+        for candidate in csv_candidates:
+            if candidate and os.path.exists(candidate):
+                csv_path = candidate
+                break
+        if csv_path:
+            break
+        time.sleep(5)
+
+    if not csv_path:
+        raise FileNotFoundError(
+            "Could not find wfp_food_prices_ken.csv in any expected location: "
+            + ", ".join([p for p in csv_candidates if p])
+        )
+
     with open(csv_path, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
         next(reader)  # skip header
@@ -45,6 +69,11 @@ with DAG(
     start_date=datetime(2026, 2, 1),
     schedule="@daily",
     catchup=False,
+    default_args={
+        "retries": 2,
+        "retry_delay": timedelta(minutes=2),
+    },
+    max_active_runs=1,
     tags=["kenya", "food_prices", "postgres"],
 ) as dag:
 

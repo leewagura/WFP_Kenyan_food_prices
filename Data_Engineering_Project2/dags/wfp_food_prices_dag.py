@@ -66,7 +66,7 @@ def wfp_food_prices_pipeline():
         except Exception:
             logger.info("No previous load found. Running full extraction.")
 
-        df = extract_mod.extract(source="local", last_processed_date=last_date)
+        df = extract_mod.extract(source="url", last_processed_date=last_date)
         logger.info("Extracted %d rows.", len(df))
 
         if df.empty:
