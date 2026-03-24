@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS raw_food_prices (
 -- Cleaned table: no nulls, no duplicates
 CREATE TABLE IF NOT EXISTS cleaned_food_prices (
 	date DATE NOT NULL,
-	admin1 VARCHAR(50) NOT NULL,
-	admin2 VARCHAR(50) NOT NULL,
+	region VARCHAR(50) NOT NULL,
+	county VARCHAR(50) NOT NULL,
 	market VARCHAR(100) NOT NULL,
 	market_id INTEGER NOT NULL,
 	latitude NUMERIC(8, 4) NOT NULL,
@@ -59,12 +59,12 @@ ORDER BY number_of_markets DESC;
 
 --markets offering the highest variety of unique commodities and categories
 SELECT 
-    admin2 AS county,
+	county,
     market,
     COUNT(DISTINCT category) AS total_categories,
     COUNT(DISTINCT commodity) AS unique_commodities_sold
 FROM cleaned_food_prices
-GROUP BY admin2, market
+GROUP BY county, market
 ORDER BY unique_commodities_sold DESC
 LIMIT 10;
 

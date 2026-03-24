@@ -1,14 +1,14 @@
--- ============================================================
+
 -- Star Schema DDL for WFP Kenya Food Prices
 -- Database: food_prices_kenya  (PostgreSQL 17)
--- ============================================================
+
 
 -- 0. Create schema
 CREATE SCHEMA IF NOT EXISTS food_prices;
 
--- ============================================================
+
 -- DIMENSION TABLES
--- ============================================================
+
 
 -- dim_date: calendar dimension
 CREATE TABLE IF NOT EXISTS food_prices.dim_date (
@@ -33,20 +33,20 @@ CREATE TABLE IF NOT EXISTS food_prices.dim_commodity (
 CREATE TABLE IF NOT EXISTS food_prices.dim_market (
     market_id       INT         PRIMARY KEY,
     market          VARCHAR(120) NOT NULL,
+    region          VARCHAR(80)  NOT NULL,
     county          VARCHAR(80)  NOT NULL,
-    district        VARCHAR(80)  NOT NULL,
     latitude        NUMERIC(8,4),
     longitude       NUMERIC(8,4)
 );
 
--- ============================================================
+
 -- STAGING TABLE  (cleaned flat data before star-schema load)
--- ============================================================
+
 CREATE TABLE IF NOT EXISTS food_prices.stg_cleaned_prices (
     id              SERIAL      PRIMARY KEY,
     date            DATE        NOT NULL,
+    region          VARCHAR(80),
     county          VARCHAR(80),
-    district        VARCHAR(80),
     market          VARCHAR(120),
     market_id       INT,
     latitude        NUMERIC(8,4),
@@ -67,9 +67,9 @@ CREATE TABLE IF NOT EXISTS food_prices.stg_cleaned_prices (
     loaded_at       TIMESTAMP   DEFAULT NOW()
 );
 
--- ============================================================
+
 -- FACT TABLE
--- ============================================================
+
 CREATE TABLE IF NOT EXISTS food_prices.fact_prices (
     fact_id         SERIAL      PRIMARY KEY,
     date_id         DATE        NOT NULL REFERENCES food_prices.dim_date(date_id),
@@ -85,28 +85,10 @@ CREATE TABLE IF NOT EXISTS food_prices.fact_prices (
     loaded_at       TIMESTAMP   DEFAULT NOW()
 );
 
--- ============================================================
+
 -- INDEXES for common query patterns
--- ============================================================
+
 CREATE INDEX IF NOT EXISTS idx_fact_date      ON food_prices.fact_prices (date_id);
 CREATE INDEX IF NOT EXISTS idx_fact_commodity  ON food_prices.fact_prices (commodity_id);
 CREATE INDEX IF NOT EXISTS idx_fact_market     ON food_prices.fact_prices (market_id);
 CREATE INDEX IF NOT EXISTS idx_stg_date       ON food_prices.stg_cleaned_prices (date);
-
--- ============================================================
--- Populate dim_date from staging (run after staging load)
--- ============================================================
--- This is handled by the Python load.py module, but can also be
--- run manually:
---
--- INSERT INTO food_prices.dim_date (date_id, year, month, month_name, quarter, day_of_week, is_weekend)
--- SELECT DISTINCT
---     date,
---     EXTRACT(YEAR FROM date)::INT,
---     EXTRACT(MONTH FROM date)::INT,
---     TO_CHAR(date, 'Month'),
---     EXTRACT(QUARTER FROM date)::INT,
---     EXTRACT(DOW FROM date)::INT,
---     CASE WHEN EXTRACT(DOW FROM date) IN (0, 6) THEN TRUE ELSE FALSE END
--- FROM food_prices.stg_cleaned_prices
--- ON CONFLICT (date_id) DO NOTHING;

@@ -85,9 +85,9 @@ with DAG(
     tags=["kenya", "food_prices", "postgres"],
 ) as dag:
 
-    # -------------------------------------------------------------------
+    
     # Task 1 – Create the staging table
-    # -------------------------------------------------------------------
+   
     create_staging_table = SQLExecuteQueryOperator(
         task_id="create_staging_table",
         conn_id="my_postgres_db",
@@ -113,17 +113,17 @@ with DAG(
         """,
     )
 
-    # -------------------------------------------------------------------
+    
     # Task 2 – Load CSV into the staging table
-    # -------------------------------------------------------------------
+    
     load_csv = PythonOperator(
         task_id="load_csv_to_staging",
         python_callable=load_csv_to_staging,
     )
 
-    # -------------------------------------------------------------------
+  
     # Task 3 – Clean data: drop nulls and duplicates
-    # -------------------------------------------------------------------
+    
     clean_data = SQLExecuteQueryOperator(
         task_id="clean_data",
         conn_id="my_postgres_db",
@@ -133,8 +133,8 @@ with DAG(
         CREATE TABLE cleaned_food_prices AS
         SELECT DISTINCT
             date,
-            admin1,
-            admin2,
+            admin1 AS region,
+            admin2 AS county,
             market,
             market_id,
             latitude,
@@ -168,9 +168,9 @@ with DAG(
         """,
     )
 
-    # -------------------------------------------------------------------
+
     # Task 4 – Aggregate: average price per commodity per year
-    # -------------------------------------------------------------------
+ 
     aggregate_prices = SQLExecuteQueryOperator(
         task_id="aggregate_avg_prices",
         conn_id="my_postgres_db",
@@ -191,9 +191,9 @@ with DAG(
         """,
     )
 
-    # -------------------------------------------------------------------
-    # Task 5 – Aggregate: average price per category
-    # -------------------------------------------------------------------
+
+        # Task 5 – Aggregate: average price per category
+
     aggregate_by_category = SQLExecuteQueryOperator(
         task_id="aggregate_avg_price_by_category",
         conn_id="my_postgres_db",
@@ -215,7 +215,7 @@ with DAG(
         """,
     )
 
-    # -------------------------------------------------------------------
+
     # Pipeline order
-    # -------------------------------------------------------------------
+
     create_staging_table >> load_csv >> clean_data >> [aggregate_prices, aggregate_by_category]

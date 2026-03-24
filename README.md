@@ -107,7 +107,7 @@ extract_data → clean_data → quality_check → load_to_postgres → run_dbt
 |---|---|---|
 | `fact_prices` | 17,632 | Price observations with foreign keys to all dimensions |
 | `dim_commodity` | 50 | Commodity name, category, unit |
-| `dim_market` | 225 | Market, county, district, lat/lon |
+| `dim_market` | 225 | Market, region, county, lat/lon |
 | `dim_date` | 239 | Year, month, quarter, day_of_week |
 | `stg_cleaned_prices` | 17,632 | Flat cleaned staging table |
 

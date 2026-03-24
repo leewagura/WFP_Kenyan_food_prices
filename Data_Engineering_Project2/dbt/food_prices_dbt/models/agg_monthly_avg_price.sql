@@ -8,7 +8,6 @@
 /*
   agg_monthly_avg_price.sql
   Monthly average price per county and commodity.
-  Used for trend analysis and Grafana dashboards.
 */
 
 SELECT

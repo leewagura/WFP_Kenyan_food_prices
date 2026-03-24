@@ -58,7 +58,7 @@ def load_staging(df: pd.DataFrame, engine, if_exists: str = "append") -> int:
     Load cleaned flat data into stg_cleaned_prices.
 
     Parameters
-    ----------
+    
     df : pd.DataFrame
         Cleaned dataframe.
     engine : SQLAlchemy Engine
@@ -66,12 +66,12 @@ def load_staging(df: pd.DataFrame, engine, if_exists: str = "append") -> int:
         'append' for incremental, 'replace' for full reload.
 
     Returns
-    -------
+    
     int
         Number of rows loaded.
     """
     staging_cols = [
-        "date", "county", "district", "market", "market_id",
+        "date", "region", "county", "market", "market_id",
         "latitude", "longitude", "category", "commodity", "commodity_id",
         "unit", "price_flag", "price_type", "currency", "price", "usd_price",
         "year", "month", "price_per_kg", "usd_price_per_kg",
@@ -147,7 +147,7 @@ def load_dim_commodity(df: pd.DataFrame, engine) -> int:
 def load_dim_market(df: pd.DataFrame, engine) -> int:
     """Populate dim_market from the cleaned dataframe."""
     markets = (
-        df[["market_id", "market", "county", "district", "latitude", "longitude"]]
+        df[["market_id", "market", "region", "county", "latitude", "longitude"]]
         .drop_duplicates(subset=["market_id"])
         .copy()
     )
@@ -158,8 +158,8 @@ def load_dim_market(df: pd.DataFrame, engine) -> int:
             if_exists="replace", index=False,
         )
         conn.execute(text(f"""
-            INSERT INTO {PG_SCHEMA}.dim_market (market_id, market, county, district, latitude, longitude)
-            SELECT market_id, market, county, district, latitude, longitude
+            INSERT INTO {PG_SCHEMA}.dim_market (market_id, market, region, county, latitude, longitude)
+            SELECT market_id, market, region, county, latitude, longitude
             FROM {PG_SCHEMA}._tmp_dim_market
             ON CONFLICT (market_id) DO NOTHING
         """))
@@ -215,14 +215,14 @@ def load(df: pd.DataFrame, full_reload: bool = False) -> dict:
     Orchestrate the full load into PostgreSQL.
 
     Parameters
-    ----------
+    
     df : pd.DataFrame
         Cleaned & quality-checked dataframe.
     full_reload : bool
         If True, replace staging data; otherwise append.
 
     Returns
-    -------
+    
     dict
         Summary of rows loaded per table.
     """
@@ -249,9 +249,9 @@ def load(df: pd.DataFrame, full_reload: bool = False) -> dict:
     return summary
 
 
-# ---------------------------------------------------------------------------
+
 # Standalone test
-# ---------------------------------------------------------------------------
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     from extract import extract

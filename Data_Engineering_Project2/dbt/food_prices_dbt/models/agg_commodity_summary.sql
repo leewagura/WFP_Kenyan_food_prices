@@ -7,7 +7,7 @@
 
 /*
   agg_commodity_summary.sql
-  Overall summary statistics per commodity – useful for bar charts.
+  Overall summary statistics per commodity
 */
 
 SELECT

@@ -32,14 +32,14 @@ def extract_from_url(url: str = DEFAULT_URL, timeout: int = 120) -> pd.DataFrame
     Download CSV from a remote URL and return as a DataFrame.
 
     Parameters
-    ----------
+    
     url : str
         URL pointing to the CSV resource.
     timeout : int
         HTTP request timeout in seconds.
 
     Returns
-    -------
+    
     pd.DataFrame
         Raw dataframe read from the remote CSV.
     """
@@ -70,12 +70,11 @@ def extract_from_local(filepath: str = LOCAL_CSV) -> pd.DataFrame:
     Load the CSV from a local file path.
 
     Parameters
-    ----------
-    filepath : str
-        Absolute or relative path to the CSV file.
+    
+    filepath : str        Absolute or relative path to the CSV file.
 
     Returns
-    -------
+    
     pd.DataFrame
         Raw dataframe read from the local CSV.
     """
@@ -98,28 +97,27 @@ def extract(
     Main extraction entry-point.
 
     Parameters
-    ----------
+    
     source : str
         'url' to download from the web, 'local' to load from disk.
     url : str
-        Remote URL (used when source='url').
+        Remote URL (if source='url').
     filepath : str
-        Local file path (used when source='local').
+        Local file path (if source='local').
     last_processed_date : str or None
-        ISO date string (YYYY-MM-DD). If provided, only rows with
-        date > last_processed_date are returned (incremental logic).
+        only rows with: date > last_processed_date are returned (incremental logic).
 
     Returns
-    -------
+    
     pd.DataFrame
-        Extracted (optionally filtered) dataframe.
+        Extracted dataframe.
     """
     if source == "url":
         df = extract_from_url(url)
     else:
         df = extract_from_local(filepath)
 
-    # --- Incremental logic: keep only new rows ---
+    # Incremental logic: keep only new rows 
     if last_processed_date is not None:
         original_len = len(df)
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
@@ -134,9 +132,8 @@ def extract(
     return df
 
 
-# ---------------------------------------------------------------------------
 # Quick standalone test
-# ---------------------------------------------------------------------------
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     data = extract(source="local")

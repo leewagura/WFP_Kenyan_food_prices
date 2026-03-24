@@ -230,7 +230,7 @@ dbt test --profiles-dir . --project-dir .
 |-------|-----|-------------|
 | `dim_date` | `date_id` (DATE) | Calendar attributes: year, month, quarter |
 | `dim_commodity` | `commodity_id` (INT) | Commodity name, category, unit |
-| `dim_market` | `market_id` (INT) | Market name, county, district, lat/lon |
+| `dim_market` | `market_id` (INT) | Market name, region, county, lat/lon |
 
 ### Fact Table
 | Table | Description |
@@ -296,7 +296,7 @@ To enable: set `SF_ACCOUNT`, `SF_USER`, `SF_PASSWORD` environment variables.
 | **Incremental loading** | Avoids re-processing historical data; uses max(date) as watermark |
 | **price_per_kg normalisation** | Different units (KG, 90 KG, 400 G, etc.) make raw prices incomparable; normalising to per-kg enables cross-commodity analysis |
 | **Unit → KG mapping** | Approximations: 1L ≈ 1kg for liquids; "Unit", "Bunch", "Head" cannot be converted → NULL |
-| **admin1 → county, admin2 → district** | Standard Kenyan administrative naming convention |
+| **admin1 → region, admin2 → county** | Standardized administrative naming used in this project |
 | **Missing lat/lon** | Forward-filled within market groups; 47 rows affected |
 | **dbt views** (not tables) | For a dataset this size, views are performant and always up-to-date |
 | **Docker Compose** | Single-command infrastructure setup for reproducibility |

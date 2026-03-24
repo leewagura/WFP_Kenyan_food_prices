@@ -1,5 +1,5 @@
 """
-snowflake_load.py - Optional Snowflake loading module.
+snowflake_load.py - Snowflake loading module.
 
 Demonstrates loading the same cleaned data to Snowflake and highlights
 a query difference vs PostgreSQL.
@@ -42,8 +42,8 @@ def create_snowflake_tables(engine) -> None:
     ddl = """
     CREATE TABLE IF NOT EXISTS stg_cleaned_prices (
         date            DATE,
+        region          VARCHAR(80),
         county          VARCHAR(80),
-        district        VARCHAR(80),
         market          VARCHAR(120),
         market_id       INT,
         latitude        FLOAT,
@@ -137,6 +137,6 @@ def demo_query_difference():
     )
 
 
-# ---------------------------------------------------------------------------
+
 if __name__ == "__main__":
     demo_query_difference()

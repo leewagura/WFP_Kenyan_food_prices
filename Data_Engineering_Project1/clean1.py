@@ -20,7 +20,7 @@ def clean_data(input_path: str = INPUT_CSV, output_path: str = OUTPUT_CSV) -> pd
     rows_before = len(df)
     print(f"Loaded {rows_before} rows from {input_path}")
 
-    # ── 1. Fix data types ──────────────────────────────────────
+    # 1. Fix data types
 
     # date column: coerce invalid dates to NaT so they get dropped with nulls
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
@@ -44,7 +44,7 @@ def clean_data(input_path: str = INPUT_CSV, output_path: str = OUTPUT_CSV) -> pd
     print("\nData types after casting:")
     print(df.dtypes)
 
-    # ── 2. Drop null rows ──────────────────────────────────────
+    # 2. Drop null rows
 
     nulls_before = df.isnull().sum()
     total_nulls = nulls_before.sum()
@@ -58,7 +58,7 @@ def clean_data(input_path: str = INPUT_CSV, output_path: str = OUTPUT_CSV) -> pd
     print(f"\nDropped {rows_before - rows_after_nulls} rows with nulls "
           f"({rows_after_nulls} remaining)")
 
-    # ── 3. Remove duplicates ───────────────────────────────────
+    # 3. Remove duplicates
 
     dupes = df.duplicated().sum()
     print(f"\nDuplicate rows found: {dupes}")
@@ -66,7 +66,10 @@ def clean_data(input_path: str = INPUT_CSV, output_path: str = OUTPUT_CSV) -> pd
         df = df.drop_duplicates()
         print(f"After removing duplicates: {len(df)} rows remaining")
 
-    # ── 4. Reset index and save ────────────────────────────────
+    # Keep raw admin column names in source, but standardize cleaned output names.
+    df = df.rename(columns={"admin1": "region", "admin2": "county"})
+
+    # 4. Reset index and save 
 
     df = df.reset_index(drop=True)
     df.to_csv(output_path, index=False)

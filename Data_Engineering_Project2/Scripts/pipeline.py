@@ -31,7 +31,7 @@ def run_pipeline(
     Execute the full ETL pipeline.
 
     Parameters
-    ----------
+    
     source : str
         'local' or 'url'.
     incremental : bool
@@ -42,13 +42,13 @@ def run_pipeline(
         If True, skip the database load step.
 
     Returns
-    -------
+    
     dict
         Pipeline execution summary.
     """
     summary = {"status": "started"}
 
-    # --- 1. Determine incremental cut-off ---
+    # 1. Determine incremental cut-off
     last_date = None
     if incremental and not full_reload:
         try:
@@ -60,7 +60,7 @@ def run_pipeline(
         except Exception as exc:
             logger.info("No previous load detected (%s). Running full load.", exc)
 
-    # --- 2. Extract ---
+    # 2. Extract
     logger.info("=== EXTRACT ===")
     df_raw = extract(source=source, last_processed_date=last_date)
     summary["rows_extracted"] = len(df_raw)
@@ -70,12 +70,12 @@ def run_pipeline(
         summary["status"] = "no_new_data"
         return summary
 
-    # --- 3. Clean / Transform ---
+    # 3. Clean / Transform
     logger.info("=== TRANSFORM ===")
     df_clean = clean(df_raw)
     summary["rows_cleaned"] = len(df_clean)
 
-    # --- 4. Quality Checks ---
+    # 4. Quality Checks ---
     logger.info("=== QUALITY CHECKS ===")
     try:
         qc_report = run_quality_checks(df_clean)
@@ -85,7 +85,7 @@ def run_pipeline(
         summary["status"] = "quality_check_failed"
         return summary
 
-    # --- 5. Load ---
+    # 5. Load
     if dry_run:
         logger.info("Dry-run mode — skipping database load.")
         summary["status"] = "dry_run_complete"
@@ -99,9 +99,9 @@ def run_pipeline(
     return summary
 
 
-# ---------------------------------------------------------------------------
+
 # CLI entry point
-# ---------------------------------------------------------------------------
+
 def main():
     parser = argparse.ArgumentParser(description="WFP Kenya Food Prices ETL Pipeline")
     parser.add_argument(

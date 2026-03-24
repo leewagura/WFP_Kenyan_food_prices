@@ -16,10 +16,10 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
+
 # Unit → kilograms conversion factors
-# Used to derive a normalised `price_per_kg` column.
-# ---------------------------------------------------------------------------
+#To derive a normalised `price_per_kg` column.
+
 UNIT_TO_KG: dict[str, float] = {
     "KG": 1.0,
     "90 KG": 90.0,
@@ -29,7 +29,7 @@ UNIT_TO_KG: dict[str, float] = {
     "126 KG": 126.0,
     "400 G": 0.4,
     "200 G": 0.2,
-    "L": 1.0,       # 1 litre ≈ 1 kg for liquids (approx)
+    "L": 1.0,       
     "500 ML": 0.5,
     "200 ML": 0.2,
     "Unit": np.nan,  # cannot convert generic "Unit" to kg
@@ -42,8 +42,8 @@ def standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Rename columns to clean snake_case format."""
     rename_map = {
         "date": "date",
-        "admin1": "county",       # admin1 = county-level region in Kenya
-        "admin2": "district",     # admin2 = sub-county / district
+        "admin1": "region",       # admin1 = region
+        "admin2": "county",     # admin2 = county
         "market": "market",
         "market_id": "market_id",
         "latitude": "latitude",
@@ -79,11 +79,11 @@ def parse_dates(df: pd.DataFrame) -> pd.DataFrame:
 def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
     """
     Handle missing / null values:
-      - county, district: fill with 'Unknown'
+      - region, county: fill with 'Unknown'
       - latitude, longitude: forward-fill within same market, else 0
       - price / usd_price: drop rows with missing prices
     """
-    for col in ("county", "district"):
+    for col in ("region", "county"):
         if col in df.columns:
             df[col] = df[col].fillna("Unknown")
 
@@ -107,7 +107,7 @@ def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
 
 def standardize_names(df: pd.DataFrame) -> pd.DataFrame:
     """Strip whitespace and title-case categorical text columns."""
-    title_cols = ["county", "district", "market", "category", "commodity"]
+    title_cols = ["region", "county", "market", "category", "commodity"]
     for col in title_cols:
         if col in df.columns:
             df[col] = (
@@ -165,12 +165,12 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
       6. Sort and reset index
 
     Parameters
-    ----------
+    
     df : pd.DataFrame
         Raw extracted dataframe.
 
     Returns
-    -------
+    
     pd.DataFrame
         Cleaned dataframe ready for quality checks & loading.
     """
