@@ -9,6 +9,7 @@ def load_csv_to_staging():
     import csv
     import os
     import time
+    from datetime import datetime
 
     hook = PostgresHook(postgres_conn_id="my_postgres_db")
     conn = hook.get_conn()
@@ -47,6 +48,13 @@ def load_csv_to_staging():
         for row in reader:
             # Replace empty strings with None for nullable columns
             row = [None if v == "" else v for v in row]
+            # Convert date from DD/MM/YYYY to YYYY-MM-DD format
+            if row[0]:  # if date exists (not None)
+                try:
+                    row[0] = datetime.strptime(row[0], "%d/%m/%Y").strftime("%Y-%m-%d")
+                except ValueError:
+                    print(f"Warning: Could not parse date '{row[0]}', setting to None")
+                    row[0] = None
             cur.execute(
                 """
                 INSERT INTO raw_food_prices
