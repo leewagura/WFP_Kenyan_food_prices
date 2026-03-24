@@ -3,8 +3,8 @@ food_prices_dbt:
   outputs:
     dev:
       type: postgres
-      host: "{{ env_var('PG_HOST', 'localhost') }}"
-      port: 5432
+      host: "{{ env_var('PG_HOST', 'postgres_project2') }}"
+      port: "{{ env_var('PG_PORT', '5432') | int }}"
       user: "{{ env_var('PG_USER', 'postgres') }}"
       pass: "{{ env_var('PG_PASSWORD', 'postgres') }}"
       dbname: "{{ env_var('PG_DATABASE', 'food_prices_kenya') }}"
