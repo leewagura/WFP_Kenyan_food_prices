@@ -53,28 +53,28 @@ This project builds a **production-grade data pipeline** that:
                                           └────────┬─────────┘
                                                    │
                      ┌─────────────────────────────▼──────────┐
-                     │              load.py                     │
+                     │              load.py                   │
                      │  ┌─────────┐ ┌───────────┐ ┌─────────┐ │
-                     │  │dim_date │ │dim_market  │ │dim_comm.│ │
+                     │  │dim_date │ │dim_market  │ │dim_comm.││
                      │  └────┬────┘ └─────┬─────┘ └────┬────┘ │
                      │       └────────────┼────────────┘      │
-                     │              ┌─────▼─────┐              │
-                     │              │fact_prices │              │
-                     │              └───────────┘              │
-                     └─────────────────────────────────────────┘
+                     │              ┌─────▼─────┐             │
+                     │              │fact_prices │            |
+                     │              └───────────┘             │
+                     └────────────────────────────────────────┘
                                           │
                      ┌────────────────────▼────────────────────┐
-                     │          dbt Core Models                 │
+                     │          dbt Core Models                │
                      │  • agg_monthly_avg_price                │
                      │  • agg_price_trends                     │
                      │  • agg_commodity_summary                │
                      └────────────────────┬────────────────────┘
                                           │
                      ┌────────────────────▼────────────────────┐
-                     │        Grafana Dashboards                │
-                     │  • Maize price trend line                │
-                     │  • Avg price by commodity bar chart      │
-                     │  • Observations by county                │
+                     │        Grafana Dashboards               │
+                     │  • Maize price trend line               │
+                     │  • Avg price by commodity bar chart     │
+                     │  • Observations by county               │
                      └─────────────────────────────────────────┘
 
    Orchestration: Apache Airflow DAG (daily schedule)
@@ -322,15 +322,7 @@ To enable: set `SF_ACCOUNT`, `SF_USER`, `SF_PASSWORD` environment variables.
 - **Data lineage** with OpenLineage / Marquez integration
 - **CI/CD** pipeline with GitHub Actions for automated dbt tests
 
----
 
-## Presentation Outline (10-15 min)
-
-1. **Problem Context** (2 min) — Food prices in Kenya, WFP monitoring
-2. **Architecture Diagram** (2 min) — Walk through the pipeline diagram above
-3. **Key Code Snippets** (3 min) — extract.py, clean.py price_per_kg logic, SQL star schema
-4. **Live Demo** (5 min) — Run Airflow DAG, show Grafana visuals, dbt run output
-5. **Challenges & Learnings** (2 min)
 6. **Future Ideas** (1 min)
 
 ---
