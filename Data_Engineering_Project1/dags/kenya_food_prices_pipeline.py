@@ -191,8 +191,7 @@ with DAG(
         """,
     )
 
-
-        # Task 5 – Aggregate: average price per category
+    # Task 5 – Aggregate: average price per category
 
     aggregate_by_category = SQLExecuteQueryOperator(
         task_id="aggregate_avg_price_by_category",

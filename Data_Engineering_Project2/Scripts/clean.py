@@ -1,14 +1,3 @@
-"""
-clean.py - Data cleaning / transformation module for WFP Food Prices Kenya.
-
-Handles:
-  - Missing value imputation
-  - Column name standardization (snake_case)
-  - Date parsing and year/month derivation
-  - Unit normalisation & price_per_kg calculation
-  - Category / commodity name standardization
-"""
-
 import logging
 
 import numpy as np
@@ -153,27 +142,7 @@ def compute_price_per_kg(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def clean(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Full cleaning pipeline – called by the orchestrator.
 
-    Steps:
-      1. Standardize column names
-      2. Parse dates → derive year, month
-      3. Handle missing values
-      4. Standardize categorical names
-      5. Compute price_per_kg
-      6. Sort and reset index
-
-    Parameters
-    
-    df : pd.DataFrame
-        Raw extracted dataframe.
-
-    Returns
-    
-    pd.DataFrame
-        Cleaned dataframe ready for quality checks & loading.
-    """
     logger.info("Starting cleaning pipeline on %d rows.", len(df))
 
     df = df.copy()
@@ -190,9 +159,9 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# ---------------------------------------------------------------------------
+
 # Standalone test
-# ---------------------------------------------------------------------------
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     from extract import extract

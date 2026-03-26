@@ -1,7 +1,7 @@
 """
 wfp_food_prices_dag.py - Apache Airflow DAG for WFP Kenya Food Prices ETL.
 
-Schedule: daily (can be adjusted)
+Schedule: daily 
 Tasks:
   1. extract_data  – download / load CSV
   2. clean_data    – pandas transformations
