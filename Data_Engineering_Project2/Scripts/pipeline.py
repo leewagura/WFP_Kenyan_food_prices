@@ -1,14 +1,3 @@
-"""
-pipeline.py - Main ETL orchestrator for WFP Food Prices Kenya.
-
-Ties together:  extract → clean → quality_checks → load
-
-Supports:
-  - Full reload (all data)
-  - Incremental mode (only new dates since last load)
-  - Dry-run (extract + clean + check, but skip load)
-"""
-
 import argparse
 import logging
 import sys
@@ -27,25 +16,7 @@ def run_pipeline(
     full_reload: bool = False,
     dry_run: bool = False,
 ) -> dict:
-    """
-    Execute the full ETL pipeline.
 
-    Parameters
-    
-    source : str
-        'local' or 'url'.
-    incremental : bool
-        If True, only process rows newer than the last loaded date.
-    full_reload : bool
-        If True, replace all data in staging (overrides incremental).
-    dry_run : bool
-        If True, skip the database load step.
-
-    Returns
-    
-    dict
-        Pipeline execution summary.
-    """
     summary = {"status": "started"}
 
     # 1. Determine incremental cut-off

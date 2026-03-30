@@ -1,17 +1,3 @@
-"""
-wfp_food_prices_dag.py - Apache Airflow DAG for WFP Kenya Food Prices ETL.
-
-Schedule: daily 
-Tasks:
-  1. extract_data  – download / load CSV
-  2. clean_data    – pandas transformations
-  3. quality_check – validate cleaned data
-  4. load_to_postgres – load staging + star schema
-  5. run_dbt       – build dbt aggregate models
-
-Compatible with Airflow 2.x / 3.x (TaskFlow API).
-"""
-
 from datetime import datetime, timedelta
 import logging
 import os
@@ -61,7 +47,7 @@ def wfp_food_prices_pipeline():
         last_date = None
         try:
             engine = load_mod.get_engine()
-            last_date = load_mod.get_last_processed_date(engine)
+            last_date = load_mod.get_last_processed_date(engine) 
             engine.dispose()
         except Exception:
             logger.info("No previous load found. Running full extraction.")
