@@ -54,22 +54,7 @@ def init_schema(engine) -> None:
 
 
 def load_staging(df: pd.DataFrame, engine, if_exists: str = "append") -> int:
-    """
-    Load cleaned flat data into stg_cleaned_prices.
 
-    Parameters
-    
-    df : pd.DataFrame
-        Cleaned dataframe.
-    engine : SQLAlchemy Engine
-    if_exists : str
-        'append' for incremental, 'replace' for full reload.
-
-    Returns
-    
-    int
-        Number of rows loaded.
-    """
     staging_cols = [
         "date", "region", "county", "market", "market_id",
         "latitude", "longitude", "category", "commodity", "commodity_id",
@@ -195,7 +180,7 @@ def load_fact_prices(df: pd.DataFrame, engine) -> int:
 def get_last_processed_date(engine) -> str | None:
     """
     Query the staging table for the max date already loaded.
-    Used for incremental extraction.
+    
     """
     try:
         with engine.connect() as conn:

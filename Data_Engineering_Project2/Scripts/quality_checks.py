@@ -97,24 +97,7 @@ def check_price_outliers(df: pd.DataFrame, z_threshold: float = 5.0) -> dict:
 
 
 def run_quality_checks(df: pd.DataFrame) -> dict:
-    """
-    Execute all quality checks and return a consolidated report.
 
-    Parameters
-    
-    df : pd.DataFrame
-        Cleaned dataframe.
-
-    Returns
-    
-    dict
-        Report with individual check results and overall pass/fail.
-
-    Raises
-    
-    QualityCheckError
-        If a critical check fails (e.g. empty dataframe).
-    """
     logger.info("Running quality checks on %d rows...", len(df))
     report = {}
 

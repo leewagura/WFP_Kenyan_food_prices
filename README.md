@@ -208,14 +208,7 @@ kenya-food-prices-pipeline/
 │   ├── requirements.txt
 │   ├── .env.example
 │   └── README.md
-│
-└── sample_outputs/                     # Pre-generated query results (CSV)
-    ├── project1_avg_price_per_commodity_year.csv
-    ├── project1_avg_price_per_category.csv
-    ├── project2_fact_prices_sample.csv
-    ├── project2_dim_commodity.csv
-    ├── project2_dim_market.csv
-    └── project2_dim_date.csv
+
 ```
 
 ---

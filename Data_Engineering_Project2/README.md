@@ -49,7 +49,7 @@ This project builds a **production-grade data pipeline** that:
 └──────────────┘     └──────────────┘     └────────┬─────────┘
                                                    │
                                           ┌────────▼─────────┐
-                                          │ quality_checks.py │
+                                          │ quality_checks.py│
                                           └────────┬─────────┘
                                                    │
                      ┌─────────────────────────────▼──────────┐
@@ -322,9 +322,3 @@ To enable: set `SF_ACCOUNT`, `SF_USER`, `SF_PASSWORD` environment variables.
 - **Data lineage** with OpenLineage / Marquez integration
 - **CI/CD** pipeline with GitHub Actions for automated dbt tests
 
-
-6. **Future Ideas** (1 min)
-
----
-
-*Built as part of a Data Engineering curriculum project.*
