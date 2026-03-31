@@ -1,6 +1,6 @@
-# Project 1 — Kenya Food Prices SQL-First ETL Pipeline
+# Project 1 — Kenya Food Prices SQL-First ELT Pipeline
 
-An Apache Airflow 3.1.7 pipeline that loads WFP (World Food Programme) Kenya food-price data into PostgreSQL and produces aggregate summary tables using pure SQL transformations.
+An Apache Airflow 3.1.7 pipeline that loads WFP (World Food Programme) Kenya food-price data into PostgreSQL and then transforms it using pure SQL queries to produce aggregate summary tables.
 
 > Part of the [Kenya Food Prices Data Engineering Project](../README.md). Can run standalone or as part of the unified multi-project Airflow instance.
 

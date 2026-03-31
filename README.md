@@ -1,6 +1,6 @@
 # Kenya Food Prices — Data Engineering Project
 
-> Two complementary data pipelines analysing **World Food Programme (WFP)** food price data for Kenya (17,632 records, 2006–2025). Orchestrated by a **single Apache Airflow 3.1.7** instance managing both pipelines through a unified Docker Compose setup.
+> Two complementary data pipelines analysing **World Food Programme (WFP)** food price data for Kenya. Orchestrated by a **single Apache Airflow 3.1.7** instance managing both pipelines through a unified Docker Compose setup.
 
 ---
 
@@ -11,7 +11,7 @@
                         │          Apache Airflow 3.1.7           │
                         │  ┌────────────────┐ ┌────────────────┐  │
                         │  │   Project 1    │ │   Project 2    │  │
-                        │  │   DAG (ETL)    │ │   DAG (ELT)    │  │
+                        │  │   DAG (ELT)    │ │   DAG (ETL/ELT) │  │
                         │  └───────┬────────┘ └───────┬────────┘  │
                         └──────────┼──────────────────┼───────────┘
                                    │                  │
@@ -51,11 +51,11 @@
 
 ---
 
-## Project 1 — SQL-First ETL Pipeline
+## Project 1 — SQL-First ELT Pipeline
 
 **DAG:** `kenya_food_prices_pipeline` · 5 tasks · [Details →](Data_Engineering_Project1/README.md)
 
-Approach: Pure SQL transformations using Airflow's `SQLExecuteQueryOperator`.
+Approach: Load raw CSV data to PostgreSQL, then transform using pure SQL with Airflow's `SQLExecuteQueryOperator`.
 
 ```
 create_staging_table → load_csv_to_staging → clean_data → ┬─ aggregate_avg_prices
@@ -83,11 +83,11 @@ create_staging_table → load_csv_to_staging → clean_data → ┬─ aggregate
 
 ---
 
-## Project 2 — Python + dbt ELT Pipeline
+## Project 2 — Python + dbt ETL/ELT Pipeline
 
 **DAG:** `wfp_kenya_food_prices_etl` · 5 tasks · [Details →](Data_Engineering_Project2/README.md)
 
-Approach: Modular Python (extract → clean → validate → load) + dbt Core for aggregate models + Grafana dashboards.
+Approach: Modular Python (extract → transform via clean → load) + additional dbt transformations for star schema models + Grafana dashboards.
 
 ```
 extract_data → clean_data → quality_check → load_to_postgres → run_dbt
