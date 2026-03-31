@@ -11,7 +11,7 @@
                         │          Apache Airflow 3.1.7           │
                         │  ┌────────────────┐ ┌────────────────┐  │
                         │  │   Project 1    │ │   Project 2    │  │
-                        │  │   DAG (ELT)    │ │   DAG (ETL/ELT) │  │
+                        │  │   DAG (ELT)    │ │   DAG (ETL/ELT)│  │
                         │  └───────┬────────┘ └───────┬────────┘  │
                         └──────────┼──────────────────┼───────────┘
                                    │                  │
@@ -144,7 +144,7 @@ Wait ~60 seconds for pip installs and DB migrations to complete.
 
 ### 4. Trigger the DAGs
 
-In Airflow UI, click the **play button ▶️** on each DAG:
+In Airflow UI, click the **play button** on each DAG:
 - `kenya_food_prices_pipeline` (Project 1)
 - `wfp_kenya_food_prices_etl` (Project 2)
 
@@ -165,13 +165,12 @@ docker compose down -v       # remove data volumes too
 ## Repository Structure
 
 ```
-kenya-food-prices-pipeline/
+DATA_ENGINEERING_PROJECT
 ├── docker-compose.yml                  # Unified: 3 Postgres + Airflow + Grafana
 ├── .gitignore
 ├── README.md                           # ← You are here
 │
 ├── Data_Engineering_Project1/          # SQL-first ETL
-│   ├── docker-compose.yaml             # Standalone compose (uses .env for secrets)
 │   ├── .env.example                    # Template for required environment variables
 │   ├── dags/
 │   │   └── kenya_food_prices_pipeline.py
@@ -179,12 +178,10 @@ kenya-food-prices-pipeline/
 │   ├── food_prices.sql                 # DDL + analytic queries
 │   ├── load_raw_food_prices.py         # Standalone Python loader (env-var credentials)
 │   ├── clean1.py                       # Data cleaning: fix dtypes, drop nulls & duplicates
-│   ├── Null_values_check.py            # Data quality exploration (legacy)
-│   ├── rows_with_nulls.csv             # Rows with missing location data
-│   └── README.md
+│   ├── Null_values_check.py            # Data quality exploration
+│   │──README.md
 │
 ├── Data_Engineering_Project2/          # Python + dbt ELT
-│   ├── docker-compose.yml              # Standalone compose (single-project)
 │   ├── dags/
 │   │   └── wfp_food_prices_dag.py
 │   ├── Scripts/
@@ -194,7 +191,7 @@ kenya-food-prices-pipeline/
 │   │   ├── quality_checks.py
 │   │   ├── load.py
 │   │   ├── pipeline.py
-│   │   └── snowflake_load.py
+│   │   └── snowflake_load.py            #optional
 │   ├── SQL/
 │   │   └── schema.sql
 │   ├── dbt/food_prices_dbt/
